@@ -38,6 +38,8 @@ import org.scalastyle.sbt.Tasks
 
 import spray.revolver.RevolverPlugin._
 
+import bintray.BintrayKeys._
+
 object BuildCommons {
 
   private val buildLocation = file(".").getAbsoluteFile.getParentFile
@@ -217,6 +219,7 @@ object SparkBuild extends PomBuild {
   // updated from sbt 0.13 to sbt 1.
   lazy val sharedSettings = /*sparkGenjavadocSettings ++
       (if (sys.env.contains("NOLINT_ON_COMPILE")) Nil else enableScalaStyle) ++*/ Seq(
+    licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0")),
     exportJars in Compile := true,
     exportJars in Test := false,
     javaHome := sys.env.get("JAVA_HOME")

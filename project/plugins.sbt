@@ -63,3 +63,5 @@ addSbtPlugin("com.simplytyped" % "sbt-antlr4" % "0.7.13")
 // the plugin; this is tracked at SPARK-14401.
 
 addSbtPlugin("org.spark-project" % "sbt-pom-reader" % "1.0.0-spark")
+
+addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.6")
