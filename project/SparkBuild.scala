@@ -37,8 +37,8 @@ import org.scalastyle.sbt.ScalastylePlugin.autoImport._
 import org.scalastyle.sbt.Tasks
 
 import spray.revolver.RevolverPlugin._
-
-import bintray.BintrayKeys._
+import bintray.BintrayKeys.{bintray => _, _}
+import bintray.InternalBintrayKeys._
 
 object BuildCommons {
 
@@ -230,14 +230,52 @@ object SparkBuild extends PomBuild {
     unidocGenjavadocVersion := "0.15",
 
     // Override SBT's default resolvers:
-    resolvers := Seq(
+    resolvers := {
+      val credsFile = bintrayCredentialsFile.value
+      val btyOrg = bintrayOrganization.value
+      val repoName = bintrayRepository.value
+
+      Seq(
       // Google Mirror of Maven Central, placed first so that it's used instead of flaky Maven Central.
       // See https://storage-download.googleapis.com/maven-central/index.html for more info.
       "gcs-maven-central-mirror" at "https://maven-central.storage-download.googleapis.com/repos/central/data/",
       DefaultMavenRepository,
       Resolver.mavenLocal,
-      Resolver.file("local", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
-    ),
+      Resolver.file("local", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns),
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-core",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-kvstore",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-launcher",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-common",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-network-common",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-network-shuffle",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-tags",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get,
+      bintray.Bintray.withRepo(credsFile, btyOrg, repoName, sLog.value) { repo =>
+        bintray.RawRepository(bintray.BintrayMavenResolver("Bintray-Maven-Publish-smarter-maven-spark-unsafe",
+          "https://api.bintray.com/maven/smarter/maven/maven", repo.repo.get(name.value), release = true))
+      }.get
+      )
+    },
     externalResolvers := resolvers.value,
     otherResolvers := SbtPomKeys.mvnLocalRepository(dotM2 => Seq(Resolver.file("dotM2", dotM2))).value,
     publishLocalConfiguration in MavenCompile :=
